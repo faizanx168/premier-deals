@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+// User model for admin/realtor authentication
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  password          String
+  role              UserRole  @default(USER)
+  emailVerified     DateTime?
+  verificationToken String?   @unique
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  inquiries Inquiry[]
+
+  @@map("users")
+}
+
+// Property model - main entity for real estate listings
+model Property {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  price       Decimal
+  type        PropertyType
+  status      PropertyStatus @default(AVAILABLE)
+  bedrooms    Int?
+  bathrooms   Int?
+  area        Decimal? // in square feet
+  address     String
+  city        String
+  state       String
+  zipCode     String
+  country     String @default("USA")
+  latitude    Float?
+  longitude   Float?
+  featured    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  images    PropertyImage[]
+  amenities PropertyAmenity[]
+  inquiries Inquiry[]
+
+  @@map("properties")
+}
+
+// Property images - multiple images per property
+model PropertyImage {
+  id         String   @id @default(cuid())
+  url        String
+  alt        String?
+  isPrimary  Boolean  @default(false)
+  order      Int      @default(0)
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_images")
+}
+
+// Amenities/Features for properties
+model Amenity {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String   // e.g., "Interior", "Exterior", "Community"
+  icon        String?  // icon name or URL
+  createdAt   DateTime @default(now())
+
+  // Relations
+  properties PropertyAmenity[]
+
+  @@map("amenities")
+}
+
+// Many-to-many relationship between Property and Amenity
+model PropertyAmenity {
+  id         String   @id @default(cuid())
+  propertyId String
+  amenityId  String
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity  Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, amenityId])
+  @@map("property_amenities")
+}
+
+// Inquiry/Contact form submissions
+model Inquiry {
+  id         String        @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  message    String
+  status     InquiryStatus @default(NEW)
+  propertyId String?
+  userId     String?       // if inquiry is from admin
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("inquiries")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  REALTOR
+  USER
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  CONDO
+  TOWNHOUSE
+  LAND
+  COMMERCIAL
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  SOLD
+  RENTED
+  PENDING
+  OFF_MARKET
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  VIEWING_SCHEDULED
+  OFFER_MADE
+  CLOSED
+  SPAM
+}
