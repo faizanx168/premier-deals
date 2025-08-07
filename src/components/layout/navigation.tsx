@@ -56,11 +56,11 @@ export default function Navigation() {
             <Image 
               src="/logo.png" 
               alt="Premier Deals" 
-              width={40} 
-              height={40}
-              className="w-10 h-10 object-contain"
+              width={100} 
+              height={100}
+              className="w-15 h-15 object-contain"
             />
-            <span className="text-xl font-bold text-gray-900">Premier Deals</span>
+            <span className="text-xl font-bold text-gray-900"></span>
           </Link>
 
           {/* Desktop Navigation */}
