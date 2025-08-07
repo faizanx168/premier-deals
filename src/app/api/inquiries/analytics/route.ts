@@ -70,7 +70,7 @@ export async function GET() {
       },
       where: {
         propertyId: {
-          not: null
+          not: undefined
         }
       },
       orderBy: {

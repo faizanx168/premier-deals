@@ -4,22 +4,6 @@ import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
 
-interface JWTToken {
-  id?: string
-  role?: string
-  emailVerified?: Date
-}
-
-interface SessionData {
-  user: {
-    id: string
-    name: string
-    email: string
-    role: string
-    emailVerified?: Date
-  }
-}
-
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -69,10 +53,10 @@ export const authOptions = {
     })
   ],
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt' as const
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWTToken; user: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
         token.role = user.role
@@ -80,7 +64,7 @@ export const authOptions = {
       }
       return token
     },
-    async session({ session, token }: { session: SessionData; token: JWTToken }) {
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string

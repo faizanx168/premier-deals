@@ -5,12 +5,14 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token
     const isAdmin = token?.role === 'ADMIN'
+    const isRealtor = token?.role === 'REALTOR'
     const isAdminRoute = req.nextUrl.pathname.startsWith('/dashboard') || 
                         req.nextUrl.pathname.startsWith('/admin-properties') ||
-                        req.nextUrl.pathname.startsWith('/inquiries')
+                        req.nextUrl.pathname.startsWith('/inquiries') ||
+                        req.nextUrl.pathname.startsWith('/settings')
 
-    // Redirect non-admin users away from admin routes
-    if (isAdminRoute && !isAdmin) {
+    // Redirect non-admin/realtor users away from admin routes
+    if (isAdminRoute && !isAdmin && !isRealtor) {
       return NextResponse.redirect(new URL('/login', req.url))
     }
 
@@ -27,7 +29,7 @@ export default withAuth(
 export const config = {
   matcher: [
     '/dashboard/:path*', 
-    '/admin-properties/:path*', 
+    '/admin-properties/:path*',
     '/inquiries/:path*',
     '/settings/:path*'
   ]

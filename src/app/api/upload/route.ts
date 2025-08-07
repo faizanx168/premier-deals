@@ -1,56 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadToS3, validateFileType, validateFileSize, generateFileName } from '@/lib/s3'
+import { uploadImage, validateImage } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
-    const file = formData.get('file') as File
+    const files = formData.getAll('images') as File[]
 
-    if (!file) {
+    if (!files || files.length === 0) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'No files uploaded' },
         { status: 400 }
       )
     }
 
-    // Validate file type
-    if (!validateFileType(file)) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Only JPEG, PNG, and WebP are allowed.' },
-        { status: 400 }
-      )
+    const uploadedUrls: string[] = []
+
+    for (const file of files) {
+      // Validate file
+      if (!validateImage({ mimetype: file.type, size: file.size })) {
+        return NextResponse.json(
+          { error: 'Invalid file type or size. Only JPEG, PNG, WebP up to 10MB allowed.' },
+          { status: 400 }
+        )
+      }
+
+      // Convert file to buffer
+      const buffer = Buffer.from(await file.arrayBuffer())
+      
+      // Upload to Cloudinary
+      const url = await uploadImage(buffer)
+      uploadedUrls.push(url)
     }
-
-    // Validate file size
-    if (!validateFileSize(file)) {
-      return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB.' },
-        { status: 400 }
-      )
-    }
-
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Generate unique filename
-    const fileName = generateFileName(file.name)
-
-    // Upload to S3
-    const fileUrl = await uploadToS3(buffer, fileName, file.type)
 
     return NextResponse.json({
       success: true,
-      fileUrl,
-      fileName: file.name,
-      size: file.size,
-      type: file.type
+      urls: uploadedUrls
     })
 
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: 'Failed to upload images' },
       { status: 500 }
     )
   }

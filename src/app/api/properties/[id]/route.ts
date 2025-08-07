@@ -11,9 +11,7 @@ export async function GET(
     const property = await prisma.property.findUnique({
       where: { id },
       include: {
-        images: {
-          orderBy: { order: 'asc' }
-        },
+        images: true,
         amenities: {
           include: {
             amenity: true
@@ -62,9 +60,6 @@ export async function PUT(
       city,
       state,
       zipCode,
-      country,
-      latitude,
-      longitude,
       featured,
       imageUrls = [],
       amenityIds = []
@@ -109,15 +104,11 @@ export async function PUT(
           city,
           state,
           zipCode,
-          country,
-          latitude: latitude ? parseFloat(latitude) : undefined,
-          longitude: longitude ? parseFloat(longitude) : undefined,
           featured,
           images: {
             create: imageUrls.map((url: string, index: number) => ({
               url,
-              isPrimary: index === 0,
-              order: index
+              isPrimary: index === 0
             }))
           },
           amenities: {
@@ -127,9 +118,7 @@ export async function PUT(
           }
         },
         include: {
-          images: {
-            orderBy: { order: 'asc' }
-          },
+          images: true,
           amenities: {
             include: {
               amenity: true

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import { 
   ArrowLeft, 
   Save, 
@@ -100,7 +99,7 @@ export default function NewPropertyPage() {
       })
 
       // Add images
-      formData.images.forEach((image, index) => {
+      formData.images.forEach((image) => {
         formDataToSend.append('images', image)
       })
 

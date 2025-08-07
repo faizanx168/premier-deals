@@ -75,7 +75,7 @@ export async function GET() {
     // Calculate active properties
     const activeProperties = await prisma.property.count({
       where: {
-        status: 'AVAILABLE'
+        status: 'ACTIVE'
       }
     })
 

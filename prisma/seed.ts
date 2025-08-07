@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, UserRole, PropertyType, PropertyStatus, InquiryStatus } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -12,29 +13,27 @@ async function main() {
     create: {
       email: 'admin@premierdeals.pk',
       name: 'Admin User',
-      password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3bp.gSJhOe', // admin123
-      role: 'ADMIN',
-      emailVerified: new Date(), // Admin is pre-verified
+      password: await bcrypt.hash('admin123', 12),
+      role: UserRole.ADMIN,
+      emailVerified: new Date(),
     },
   })
 
   console.log('✅ Admin user created:', adminUser.email)
 
-  // Create sample regular users
+  // Create sample users
   const sampleUsers = [
     {
       email: 'john.doe@example.com',
       name: 'John Doe',
-      password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3bp.gSJhOe', // password123
-      role: 'USER',
-      emailVerified: new Date(),
+      password: await bcrypt.hash('password123', 12),
+      role: UserRole.USER,
     },
     {
       email: 'jane.smith@example.com',
       name: 'Jane Smith',
-      password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj3bp.gSJhOe', // password123
-      role: 'USER',
-      emailVerified: new Date(),
+      password: await bcrypt.hash('password123', 12),
+      role: UserRole.REALTOR,
     },
   ]
 
@@ -97,8 +96,8 @@ async function main() {
       title: 'Luxury Villa in F-7 Markaz',
       description: 'Beautiful 5-bedroom villa with modern amenities, located in the prestigious F-7 sector of Islamabad. Features include a spacious garden, swimming pool, and security system.',
       price: 85000000,
-      type: 'HOUSE',
-      status: 'AVAILABLE',
+      type: PropertyType.SALE,
+      status: PropertyStatus.ACTIVE,
       bedrooms: 5,
       bathrooms: 4,
       area: 4500,
@@ -106,31 +105,14 @@ async function main() {
       city: 'Islamabad',
       state: 'Federal Territory',
       zipCode: '44000',
-      country: 'Pakistan',
-      featured: true,
-    },
-    {
-      title: 'Modern Apartment in Blue Area',
-      description: 'Contemporary 3-bedroom apartment in the heart of Blue Area, Islamabad. Perfect for professionals with easy access to offices and shopping centers.',
-      price: 45000000,
-      type: 'APARTMENT',
-      status: 'AVAILABLE',
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 1800,
-      address: 'Apartment 45, Blue Area Plaza',
-      city: 'Islamabad',
-      state: 'Federal Territory',
-      zipCode: '44000',
-      country: 'Pakistan',
       featured: true,
     },
     {
       title: 'Penthouse in E-11',
       description: 'Exclusive penthouse with panoramic city views. Features include a private terrace, modern kitchen, and luxury finishes throughout.',
       price: 120000000,
-      type: 'APARTMENT',
-      status: 'PENDING',
+      type: PropertyType.SALE,
+      status: PropertyStatus.PENDING,
       bedrooms: 4,
       bathrooms: 3,
       area: 2800,
@@ -138,15 +120,14 @@ async function main() {
       city: 'Islamabad',
       state: 'Federal Territory',
       zipCode: '44000',
-      country: 'Pakistan',
       featured: true,
     },
     {
       title: 'Commercial Space in DHA',
       description: 'Prime commercial space suitable for retail or office use. High foot traffic area with excellent visibility.',
       price: 65000000,
-      type: 'COMMERCIAL',
-      status: 'AVAILABLE',
+      type: PropertyType.SALE,
+      status: PropertyStatus.ACTIVE,
       bedrooms: 0,
       bathrooms: 2,
       area: 2500,
@@ -154,15 +135,14 @@ async function main() {
       city: 'Islamabad',
       state: 'Federal Territory',
       zipCode: '44000',
-      country: 'Pakistan',
       featured: false,
     },
     {
       title: 'Residential Plot in Bahria Town',
       description: 'Premium residential plot in Bahria Town, Islamabad. Ready for construction with all utilities available.',
       price: 35000000,
-      type: 'LAND',
-      status: 'AVAILABLE',
+      type: PropertyType.LAND,
+      status: PropertyStatus.ACTIVE,
       bedrooms: 0,
       bathrooms: 0,
       area: 5000,
@@ -170,14 +150,20 @@ async function main() {
       city: 'Islamabad',
       state: 'Federal Territory',
       zipCode: '44000',
-      country: 'Pakistan',
       featured: false,
     },
   ]
 
   for (const property of properties) {
     await prisma.property.create({
-      data: property,
+      data: {
+        ...property,
+        user: {
+          connect: {
+            email: 'admin@premierdeals.pk'
+          }
+        }
+      },
     })
   }
 
@@ -190,24 +176,35 @@ async function main() {
       email: 'ahmed@example.com',
       phone: '+92 300 1234567',
       message: 'I am very interested in this property. Can I schedule a viewing?',
-      status: 'NEW',
+      status: InquiryStatus.NEW,
     },
     {
       name: 'Fatima Ali',
       email: 'fatima@example.com',
       phone: '+92 301 2345678',
       message: 'Looking for investment opportunities. What are the rental yields?',
-      status: 'CONTACTED',
+      status: InquiryStatus.CONTACTED,
     },
   ]
 
-  for (const inquiry of inquiries) {
-    await prisma.inquiry.create({
-      data: inquiry,
-    })
+  // Get the first property to connect inquiries
+  const firstProperty = await prisma.property.findFirst()
+  
+  if (firstProperty) {
+    for (const inquiry of inquiries) {
+      await prisma.inquiry.create({
+        data: {
+          ...inquiry,
+          property: {
+            connect: {
+              id: firstProperty.id
+            }
+          }
+        },
+      })
+    }
+    console.log('✅ Sample inquiries created')
   }
-
-  console.log('✅ Sample inquiries created')
 
   console.log('🎉 Database seeding completed!')
 }

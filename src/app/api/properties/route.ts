@@ -55,9 +55,7 @@ export async function GET(request: NextRequest) {
       prisma.property.findMany({
         where,
         include: {
-          images: {
-            orderBy: { order: 'asc' }
-          },
+          images: true,
           amenities: {
             include: {
               amenity: true
@@ -117,9 +115,6 @@ export async function POST(request: NextRequest) {
       city,
       state,
       zipCode,
-      country = 'USA',
-      latitude,
-      longitude,
       featured = false,
       imageUrls = [],
       amenityIds = []
@@ -147,15 +142,16 @@ export async function POST(request: NextRequest) {
         city,
         state,
         zipCode,
-        country,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
         featured,
+        user: {
+          connect: {
+            email: 'admin@premierdeals.pk' // Default to admin user
+          }
+        },
         images: {
           create: imageUrls.map((url: string, index: number) => ({
             url,
-            isPrimary: index === 0,
-            order: index
+            isPrimary: index === 0
           }))
         },
         amenities: {

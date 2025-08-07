@@ -71,7 +71,7 @@ export default function DashboardLayout({
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Properties', href: '/properties', icon: Building2 },
+    { name: 'Properties', href: '/admin-properties', icon: Building2 },
     { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
     { name: 'Settings', href: '/settings', icon: Settings },
   ]

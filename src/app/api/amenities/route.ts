@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    const { name, category, icon } = body
+    const { name, category } = body
 
     // Validate required fields
     if (!name || !category) {
@@ -58,8 +58,7 @@ export async function POST(request: NextRequest) {
     const amenity = await prisma.amenity.create({
       data: {
         name,
-        category,
-        icon
+        category
       }
     })
 
