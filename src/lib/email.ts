@@ -1,13 +1,12 @@
 import nodemailer from 'nodemailer'
-
 // Create SMTP transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
+  host: process.env.SMTP_ENDPOINT,
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD,
   },
 })
 
@@ -20,7 +19,7 @@ export interface EmailData {
 export async function sendEmail(emailData: EmailData) {
   try {
     const mailOptions = {
-      from: process.env.SMTP_USER,
+      from: process.env.FROM,
       to: emailData.to,
       subject: emailData.subject,
       html: emailData.html,
@@ -202,3 +201,93 @@ export function generatePasswordResetEmail(email: string, token: string, name: s
     `
   }
 } 
+
+export function generateContactAdminEmail(params: {
+  to?: string
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string
+  subject: string
+  message: string
+}) {
+  const {
+    to = 'faizanx168@gmail.com',
+    firstName,
+    lastName,
+    email,
+    phone,
+    subject,
+    message,
+  } = params
+
+  const fullName = `${firstName} ${lastName}`.trim()
+
+  return {
+    to,
+    subject: `New Contact Submission: ${subject}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Contact Submission</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; background: #ffffff;">
+          <div style="max-width: 640px; margin: 0 auto; padding: 24px;">
+            <h1 style="margin: 0 0 16px; color: #111827; font-size: 20px;">New Contact Form Submission</h1>
+            <p style="margin: 0 0 8px; color: #374151;">You received a new message from the website contact form.</p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+
+            <h2 style="margin: 16px 0 8px; font-size: 16px; color: #111827;">Details</h2>
+            <ul style="padding-left: 16px; margin: 0 0 16px; color: #374151;">
+              <li><strong>Name:</strong> ${fullName}</li>
+              <li><strong>Email:</strong> ${email}</li>
+              ${phone ? `<li><strong>Phone:</strong> ${phone}</li>` : ''}
+              <li><strong>Subject:</strong> ${subject}</li>
+            </ul>
+
+            <h2 style="margin: 16px 0 8px; font-size: 16px; color: #111827;">Message</h2>
+            <div style="white-space: pre-wrap; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; color: #111827;">
+              ${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+            </div>
+
+            <p style="margin-top: 24px; color: #6b7280; font-size: 12px;">This email was sent from the contact form on Premier Deals.</p>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+export function generateContactUserConfirmationEmail(params: {
+  to: string
+  firstName: string
+  subject: string
+}) {
+  const { to, firstName, subject } = params
+  return {
+    to,
+    subject: 'We received your message - Premier Deals',
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Contact Confirmation</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; background: #ffffff;">
+          <div style="max-width: 640px; margin: 0 auto; padding: 24px;">
+            <h1 style="margin: 0 0 16px; color: #2563eb; font-size: 22px;">Thanks for reaching out!</h1>
+            <p style="margin: 0 0 12px; color: #374151;">Hi ${firstName},</p>
+            <p style="margin: 0 0 12px; color: #374151;">We’ve received your message regarding “${subject}”. Our team will get back to you within 24 hours during business days.</p>
+            <p style="margin: 0 0 12px; color: #374151;">If your inquiry is urgent, please call us at <a href="tel:+923175030768" style="color:#2563eb; text-decoration: underline;">+92 3175030768</a>.</p>
+            <p style="margin: 16px 0 0; color: #6b7280; font-size: 12px;">Premier Deals</p>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}

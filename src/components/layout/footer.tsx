@@ -105,13 +105,13 @@ export default function Footer() {
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-300 text-sm">
-                  123 Main Street, City, State 12345
+                Kuri Road, Jinnah Avenue, Park Enacalve, Islamabad, Pakistan
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-300 text-sm">
-                  (555) 123-4567
+                +92 317 5030768
                 </span>
               </div>
               <div className="flex items-center space-x-3">
@@ -124,9 +124,8 @@ export default function Footer() {
             <div className="pt-4">
               <h4 className="font-medium mb-2">Office Hours</h4>
               <p className="text-gray-300 text-sm">
-                Mon - Fri: 9:00 AM - 6:00 PM<br />
-                Sat: 10:00 AM - 4:00 PM<br />
-                Sun: Closed
+                Mon - Sun: 9:00 AM - 7:00 PM<br />
+               
               </p>
             </div>
           </div>

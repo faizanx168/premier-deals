@@ -103,7 +103,7 @@ export default function PropertyCard({
             className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
           >
             <Heart 
-              className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+              className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white-600'}`} 
             />
           </button>
 
@@ -125,7 +125,7 @@ export default function PropertyCard({
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
               <span className="text-xs font-medium">{rating}</span>
               {reviewCount && (
-                <span className="text-xs text-gray-600">({reviewCount})</span>
+                <span className="text-xs text-white-600">({reviewCount})</span>
               )}
             </div>
           )}
@@ -136,11 +136,11 @@ export default function PropertyCard({
         <div className="space-y-3">
           {/* Price */}
           <div className="flex items-center justify-between">
-            <span className="text-xl font-bold text-gray-900">
+            <span className="text-xl font-bold text-white-900">
               {formatPrice(price)}
             </span>
             {normalizedType === "rent" && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-white-500">
                 PKR {Math.round(price / 30).toLocaleString()}/night
               </span>
             )}
@@ -148,17 +148,17 @@ export default function PropertyCard({
 
           {/* Title and Location */}
           <div>
-            <h3 className="font-semibold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
+            <h3 className="font-semibold text-white-900 line-clamp-1 group-hover:text-primary transition-colors">
               {title}
             </h3>
-            <div className="flex items-center space-x-1 text-gray-500 text-sm mt-1">
+            <div className="flex items-center space-x-1 text-white-500 text-sm mt-1">
               <MapPin className="w-3 h-3" />
               <span className="line-clamp-1">{displayLocation}</span>
             </div>
           </div>
 
           {/* Property Details */}
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-white-600">
             <div className="flex items-center space-x-4">
               {bedrooms !== undefined && (
                 <div className="flex items-center space-x-1">

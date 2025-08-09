@@ -170,7 +170,7 @@ export default function PropertiesPage() {
           <h1 className="text-3xl font-bold text-gray-900">Properties</h1>
           <p className="text-gray-600 mt-1">Manage your property listings</p>
         </div>
-        <Link href="/properties/new">
+        <Link href="/admin-properties/new">
           <Button className="flex items-center">
             <Plus className="w-4 h-4 mr-2" />
             Add Property
@@ -387,7 +387,7 @@ export default function PropertiesPage() {
                 : 'Get started by adding your first property'
               }
             </p>
-            <Link href="/properties/new">
+            <Link href="/admin-properties/new">
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Property

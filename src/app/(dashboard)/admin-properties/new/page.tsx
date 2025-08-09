@@ -109,7 +109,7 @@ export default function NewPropertyPage() {
       })
 
       if (response.ok) {
-        router.push('/properties')
+        router.push('/admin-properties')
       } else {
         const error = await response.json()
         alert(error.message || 'Failed to create property')
@@ -126,7 +126,7 @@ export default function NewPropertyPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/properties">
+          <Link href="/admin-properties">
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Properties
@@ -418,7 +418,7 @@ export default function NewPropertyPage() {
 
         {/* Submit */}
         <div className="flex justify-end space-x-4">
-          <Link href="/properties">
+          <Link href="/admin-properties">
             <Button variant="outline" type="button">
               Cancel
             </Button>

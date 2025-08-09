@@ -16,7 +16,7 @@ import {
   LogOut,
   Settings,
   Heart,
-  Bell,
+
   ChevronDown,
   Plus,
   UserCheck
@@ -162,23 +162,7 @@ export default function Navigation() {
                         </Link>
                       )}
                       
-                      <Link
-                        href="/favorites"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Heart className="w-4 h-4 mr-3" />
-                        Favorites
-                      </Link>
                       
-                      <Link
-                        href="/notifications"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <Bell className="w-4 h-4 mr-3" />
-                        Notifications
-                      </Link>
                       
                       <Link
                         href="/profile"

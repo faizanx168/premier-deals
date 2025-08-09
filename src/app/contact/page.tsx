@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Mail, Phone, MapPin, Clock, MessageSquare } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock } from 'lucide-react'
+import ContactForm from '@/components/forms/ContactForm'
 
 export const metadata: Metadata = {
   title: 'Contact Us - Premier Deals',
@@ -38,86 +38,7 @@ export default function ContactPage() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          First Name *
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Your first name"
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Last Name *
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Your last name"
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email Address *
-                      </label>
-                      <Input
-                        type="email"
-                        placeholder="your.email@example.com"
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                      </label>
-                      <Input
-                        type="tel"
-                        placeholder="+92 300 1234567"
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Subject *
-                      </label>
-                      <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option value="">Select a subject</option>
-                        <option value="property-inquiry">Property Inquiry</option>
-                        <option value="viewing-request">Schedule Viewing</option>
-                        <option value="investment-advice">Investment Advice</option>
-                        <option value="general-inquiry">General Inquiry</option>
-                        <option value="partnership">Partnership Opportunity</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Message *
-                      </label>
-                      <textarea
-                        rows={5}
-                        placeholder="Tell us how we can help you..."
-                        required
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full" size="lg">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Send Message
-                    </Button>
-                  </form>
+                  <ContactForm />
                 </CardContent>
               </Card>
             </div>
@@ -135,9 +56,9 @@ export default function ContactPage() {
                       <MapPin className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Main Office</h3>
-                      <p className="text-gray-600">
-                        Blue Area, Islamabad<br />
+                      <h3 className="font-semibold text-white-900 mb-1">Main Office</h3>
+                      <p className="text-white-600">
+                      Kuri Road, Jinnah Avenue, Park Enacalve, Islamabad, Pakistan<br />
                         Pakistan
                       </p>
                     </div>
@@ -148,15 +69,13 @@ export default function ContactPage() {
                       <Phone className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                      <p className="text-gray-600">
+                      <h3 className="font-semibold text-white-900 mb-1">Phone</h3>
+                      <p className="text-white-600">
                         <a href="tel:+923001234567" className="hover:text-blue-600">
-                          +92 300 1234567
+                          +92 3175030768
                         </a>
                         <br />
-                        <a href="tel:+92511234567" className="hover:text-blue-600">
-                          +92 51 1234567
-                        </a>
+                       
                       </p>
                     </div>
                   </div>
@@ -166,8 +85,8 @@ export default function ContactPage() {
                       <Mail className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                      <p className="text-gray-600">
+                      <h3 className="font-semibold text-white-900 mb-1">Email</h3>
+                      <p className="text-white-600">
                         <a href="mailto:info@premierdeals.pk" className="hover:text-blue-600">
                           info@premierdeals.pk
                         </a>
@@ -184,12 +103,10 @@ export default function ContactPage() {
                       <Clock className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
+                      <h3 className="font-semibold text-White-900 mb-1">Business Hours</h3>
                       <p className="text-gray-600">
-                        Monday - Friday: 9:00 AM - 6:00 PM<br />
-                        Saturday: 10:00 AM - 4:00 PM<br />
-                        Sunday: Closed
-                      </p>
+                        Monday - Sunday: 9:00 AM - 7:00 PM<br />
+                                  </p>
                     </div>
                   </div>
                 </CardContent>
@@ -201,17 +118,27 @@ export default function ContactPage() {
                   <CardTitle className="text-xl">Quick Contact</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button className="w-full" size="lg">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Now
+                  <Button asChild className="w-full" size="lg">
+                    <a href="tel:+923175030768">
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call Now
+                    </a>
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Email Us
+                  <Button asChild variant="outline" className="w-full" size="lg">
+                    <a href="mailto:info@premierdeals.pk">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Email Us
+                    </a>
                   </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Get Directions
+                  <Button asChild variant="outline" className="w-full" size="lg">
+                    <a
+                      href="https://www.google.com/maps?q=Kuri+Road,+Jinnah+Avenue,+Park+Enclave,+Islamabad,+Pakistan"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Get Directions
+                    </a>
                   </Button>
                 </CardContent>
               </Card>
@@ -227,7 +154,7 @@ export default function ContactPage() {
                   </p>
                   <div className="flex items-center space-x-2">
                     <Phone className="w-4 h-4 text-red-600" />
-                    <span className="font-semibold text-red-800">+92 300 1234567</span>
+                    <span className="font-semibold text-red-800">+92 317 5030768</span>
                   </div>
                 </CardContent>
               </Card>
@@ -242,7 +169,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4 text-gray-900">Find Our Office</h2>
             <p className="text-lg text-gray-600">
-              Visit us at our main office in Islamabad&apos;s Blue Area
+              Visit us at our main office in Islamabad&apos;s Park Enclave
             </p>
           </div>
           
@@ -252,7 +179,7 @@ export default function ContactPage() {
               <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">Interactive map will be embedded here</p>
               <p className="text-sm text-gray-500 mt-2">
-                Blue Area, Islamabad, Pakistan
+               Kuri Road, Jinnah Avenue, Park Enacalve, Islamabad, Pakistan
               </p>
             </div>
           </div>

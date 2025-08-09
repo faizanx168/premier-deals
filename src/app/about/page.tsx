@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -10,39 +11,25 @@ export const metadata: Metadata = {
 
 const teamMembers = [
   {
-    name: 'Ahmed Khan',
+    name: 'Arslan Zia',
     role: 'Founder & CEO',
-    image: '/team/ahmed-khan.jpg',
-    bio: 'With over 15 years of experience in real estate, Ahmed leads Premier Deals with a vision of excellence and customer satisfaction.',
-    email: 'ahmed@premierdeals.pk'
+    image:  "/team/arslan.jpeg",
+    bio: 'With over 5 years of experience in real estate and a law degree, Ahmed leads Premier Deals with a vision of excellence and customer satisfaction.',
+    email: 'arslan@premierdeals.pk'
   },
   {
-    name: 'Fatima Ali',
-    role: 'Senior Property Consultant',
-    image: '/team/fatima-ali.jpg',
-    bio: 'Specializing in residential properties, Fatima has helped hundreds of families find their dream homes in Islamabad.',
-    email: 'fatima@premierdeals.pk'
-  },
-  {
-    name: 'Usman Hassan',
-    role: 'Commercial Property Specialist',
-    image: '/team/usman-hassan.jpg',
-    bio: 'Expert in commercial real estate with deep knowledge of Islamabad\'s business districts and investment opportunities.',
-    email: 'usman@premierdeals.pk'
-  },
-  {
-    name: 'Ayesha Malik',
+    name: 'Mubeen Malik',
     role: 'Marketing Director',
-    image: '/team/ayesha-malik.jpg',
+    image:  "/team/arslan.jpeg",
     bio: 'Leading our marketing efforts to showcase the best properties and connect with clients across Pakistan.',
-    email: 'ayesha@premierdeals.pk'
+    email: 'mubeen@premierdeals.pk'
   }
 ]
 
 const stats = [
   { number: '500+', label: 'Properties Sold' },
-  { number: '1000+', label: 'Happy Clients' },
-  { number: '15+', label: 'Years Experience' },
+  { number: '100+', label: 'Happy Clients' },
+  { number: '5+', label: 'Years Experience' },
   { number: '50+', label: 'Areas Covered' }
 ]
 
@@ -87,7 +74,7 @@ export default function AboutPage() {
               </p>
               <div className="flex space-x-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">15+</div>
+                  <div className="text-2xl font-bold text-blue-600">5+</div>
                   <div className="text-sm text-gray-600">Years Experience</div>
                 </div>
                 <div className="text-center">
@@ -95,7 +82,7 @@ export default function AboutPage() {
                   <div className="text-sm text-gray-600">Properties Sold</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">1000+</div>
+                  <div className="text-2xl font-bold text-blue-600">100+</div>
                   <div className="text-sm text-gray-600">Happy Clients</div>
                 </div>
               </div>
@@ -148,10 +135,15 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-bold text-gray-500">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
+                  <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                      priority={index === 0}
+                    />
                   </div>
                   <CardTitle className="text-xl">{member.name}</CardTitle>
                   <p className="text-blue-600 font-medium">{member.role}</p>
