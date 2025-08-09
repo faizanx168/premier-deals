@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import HeroSection from "@/components/home/hero-section"
 import FeaturedProperties from "@/components/home/featured-properties"
 import RecentProperties from "@/components/home/recent-properties"

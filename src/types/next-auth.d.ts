@@ -1,3 +1,5 @@
+import { DefaultSession } from "next-auth"
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -6,7 +8,7 @@ declare module "next-auth" {
       email: string
       role: "ADMIN" | "REALTOR" | "USER"
       emailVerified?: Date
-    }
+    } & DefaultSession["user"]
   }
 
   interface User {
@@ -23,5 +25,17 @@ declare module "next-auth/jwt" {
     id: string
     role: string
     emailVerified?: Date
+  }
+}
+
+declare module "next-auth/core/types" {
+  interface Session {
+    user: {
+      id: string
+      name: string
+      email: string
+      role: "ADMIN" | "REALTOR" | "USER"
+      emailVerified?: Date
+    } & DefaultSession["user"]
   }
 } 

@@ -3,8 +3,19 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 import { UserRole } from '@prisma/client'
+import { JWT } from 'next-auth/jwt'
+import type { NextAuthOptions } from 'next-auth'
 
-export const authOptions = {
+// Extend the User type to include our custom fields
+interface ExtendedUser {
+  id: string
+  email: string
+  name: string | null
+  role: UserRole
+  emailVerified: Date | null
+}
+
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -47,7 +58,7 @@ export const authOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          emailVerified: user.emailVerified,
+          emailVerified: user.emailVerified || undefined,
         }
       }
     })
@@ -58,16 +69,18 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.role = user.role
-        token.emailVerified = user.emailVerified
+        const extendedUser = user as ExtendedUser
+        token.id = extendedUser.id
+        token.role = extendedUser.role
+        token.emailVerified = extendedUser.emailVerified || undefined
       }
       return token
     },
-    async session({ session, token }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async session({ session, token }: { session: any; token: JWT }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as string
+        session.user.role = token.role as "ADMIN" | "REALTOR" | "USER"
         session.user.emailVerified = token.emailVerified as Date
       }
       return session

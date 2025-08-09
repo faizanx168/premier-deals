@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, XCircle, AlertCircle, Building2 } from 'lucide-react'
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -32,10 +32,10 @@ export default function VerifyPage() {
           setStatus('error')
           setMessage(data.error || 'Verification failed')
         }
-              } catch {
-          setStatus('error')
-          setMessage('An error occurred during verification')
-        }
+      } catch {
+        setStatus('error')
+        setMessage('An error occurred during verification')
+      }
     }
 
     verifyEmail()
@@ -164,5 +164,47 @@ export default function VerifyPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Loading component
+function VerifyPageLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <Building2 className="w-12 h-12 text-blue-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Premier Deals</h1>
+          <p className="text-gray-600">Email Verification</p>
+        </div>
+        <Card className="shadow-xl">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <AlertCircle className="w-16 h-16 text-blue-500 animate-pulse" />
+            </div>
+            <CardTitle className="text-2xl">Verifying your email...</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+            <p className="text-sm text-gray-500 mt-4">
+              This may take a few moments...
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<VerifyPageLoading />}>
+      <VerifyPageContent />
+    </Suspense>
   )
 } 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import PropertyFilters, { FilterState } from "@/components/property/property-filters"
 import PropertyGrid from "@/components/property/property-grid"
@@ -31,7 +31,7 @@ interface PaginationInfo {
   hasPrevPage: boolean
 }
 
-export default function PropertiesPage() {
+function PropertiesPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -101,19 +101,23 @@ export default function PropertiesPage() {
       }
     })
     
-    params.append('page', '1') // Reset to first page when filters change
+    if (currentPage > 1) {
+      params.append('page', currentPage.toString())
+    }
     
-    router.push(`/properties?${params}`)
+    const newURL = params.toString() ? `?${params.toString()}` : ''
+    router.push(`/properties${newURL}`)
   }
 
   // Apply filters
   const applyFilters = () => {
     updateURL()
+    fetchProperties()
   }
 
   // Clear filters
   const clearFilters = () => {
-    const clearedFilters: FilterState = {
+    const newFilters: FilterState = {
       search: '',
       propertyType: '',
       minPrice: '',
@@ -127,15 +131,13 @@ export default function PropertiesPage() {
       sortBy: 'createdAt',
       sortOrder: 'desc'
     }
-    setFilters(clearedFilters)
+    setFilters(newFilters)
     router.push('/properties')
   }
 
-  // Navigate to page
+  // Handle pagination
   const goToPage = (page: number) => {
-    const params = new URLSearchParams(searchParams)
-    params.set('page', page.toString())
-    router.push(`/properties?${params}`)
+    router.push(`/properties?page=${page}`)
   }
 
   // Handle view mode change
@@ -148,53 +150,164 @@ export default function PropertiesPage() {
     setShowFilters(!showFilters)
   }
 
+  // Update filters when search params change
+  useEffect(() => {
+    const newFilters: FilterState = {
+      search: searchParams.get('search') || '',
+      propertyType: searchParams.get('type') || '',
+      minPrice: searchParams.get('minPrice') || '',
+      maxPrice: searchParams.get('maxPrice') || '',
+      bedrooms: searchParams.get('bedrooms') || '',
+      bathrooms: searchParams.get('bathrooms') || '',
+      city: searchParams.get('city') || '',
+      area: searchParams.get('area') || '',
+      status: searchParams.get('status') || '',
+      featured: searchParams.get('featured') === 'true',
+      sortBy: searchParams.get('sortBy') || 'createdAt',
+      sortOrder: searchParams.get('sortOrder') || 'desc'
+    }
+    setFilters(newFilters)
+  }, [searchParams])
+
+  // Fetch properties when component mounts or filters change
   useEffect(() => {
     fetchProperties()
-  }, [currentPage, searchParams])
+  }, [currentPage, filters])
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Properties in Islamabad
+            Properties
           </h1>
           <p className="text-gray-600">
-            Discover your perfect home in Pakistan&apos;s capital city
+            Discover your perfect property from our extensive collection
           </p>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
+        {/* Filters and View Controls */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+          {/* Filters */}
+          <div className={`lg:w-1/4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             <PropertyFilters
               filters={filters}
               onFiltersChange={setFilters}
               onApplyFilters={applyFilters}
               onClearFilters={clearFilters}
-              isCollapsed={!showFilters}
-              onToggleCollapse={toggleFilters}
             />
           </div>
 
-          {/* Properties Grid */}
-          <div className="lg:col-span-3">
-            <PropertyGrid
-              properties={properties}
-              loading={loading}
-              pagination={pagination || undefined}
-              onPageChange={goToPage}
-              onViewModeChange={handleViewModeChange}
-              viewMode={viewMode}
-              showFilters={true}
-              onToggleFilters={toggleFilters}
-            />
+          {/* Main Content */}
+          <div className="lg:w-3/4">
+            {/* View Controls */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleFilters}
+                  className="lg:hidden px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+                >
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </button>
+                
+                {pagination && (
+                  <span className="text-sm text-gray-600">
+                    Showing {((currentPage - 1) * 12) + 1} to {Math.min(currentPage * 12, pagination.total)} of {pagination.total} properties
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleViewModeChange('grid')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'grid' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => handleViewModeChange('list')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'list' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM3 16a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => handleViewModeChange('compact')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === 'compact' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM3 16a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Properties Grid */}
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <PropertyGrid
+                properties={properties}
+                loading={loading}
+                viewMode={viewMode}
+                pagination={pagination || undefined}
+                onPageChange={goToPage}
+              />
+            )}
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+// Loading component
+function PropertiesPageLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+              <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<PropertiesPageLoading />}>
+      <PropertiesPageContent />
+    </Suspense>
   )
 } 
