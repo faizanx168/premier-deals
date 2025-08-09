@@ -38,8 +38,12 @@ export default function ContactForm() {
       setPhone('')
       setSubject('')
       setMessage('')
-    } catch (err: any) {
-      setError(err?.message || 'Something went wrong. Please try again later.')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('Something went wrong. Please try again later.')
+      }
     } finally {
       setLoading(false)
     }
